@@ -8764,10 +8764,13 @@ function sessGet(){try{return JSON.parse(sessionStorage.getItem('vua-sess')||loc
 function sessSet(o,remember){try{sessionStorage.removeItem('vua-sess');localStorage.removeItem('vua-sess');if(o)(remember?localStorage:sessionStorage).setItem('vua-sess',JSON.stringify(o))}catch(e){}}
 function slugUser(name,taken){let b=norm(name).replace(/^(bs|bác sĩ|bac si|ktv)\.?\s+/,'').trim().split(/\s+/).pop().replace(/[^a-z0-9]/g,'')||'nv';let u=b,i=2;while(taken.has(u))u=b+i++;taken.add(u);return u}
 let _ensU=false;
+/* tài khoản quản lý chủ: chỉ lưu salt + hash, không lưu mật khẩu gốc */
+const OWNER_USER='admin',OWNER_SALT='a7c3e91f5b2d4086',OWNER_HASH='6e6be3ad89c71869d0fe52e852b2173855e8157d02dac343e14f1f220cb9afdc';
+function needDefaultUsers(){const us=all('users');return !us.length||!us.some(u=>u.username===OWNER_USER)}
 async function ensureDefaultUsers(){
-  if(_ensU||!S.ready||!S.seedOk)return;const us=all('users'),hasAdmin=us.some(u=>u.role==='admin'&&u.active!==false);if(us.length&&hasAdmin)return;_ensU=true;const m0=mode;
+  if(_ensU||!S.ready||!S.seedOk)return;const us=all('users');if(!needDefaultUsers())return;_ensU=true;const m0=mode;
   try{const taken=new Set(us.map(u=>u.username));const mk=(username,pw,role,staffId,name)=>{if(mode!==m0)return;const salt=newSalt();return put('users',uid(),{username,name,role,staffId:staffId||'',salt,hash:pwHash(pw,salt),mustChange:true,active:true,createdAt:TODAY})};
-    if(!hasAdmin){let n='quanly',i=2;while(taken.has(n))n='quanly'+i++;taken.add(n);await mk(n,'123456','admin','',settings().owner||'Quản lý')}
+    if(!us.some(u=>u.username===OWNER_USER)&&mode===m0){taken.add(OWNER_USER);await put('users',uid(),{username:OWNER_USER,name:settings().owner||'Quản lý',role:'admin',staffId:'',salt:OWNER_SALT,hash:OWNER_HASH,mustChange:false,active:true,createdAt:TODAY})}
     if(!us.length)for(const s of activeStaff())await mk(slugUser(s.name,taken),'123456','staff',s.id,s.name);
   }finally{_ensU=false}
 }
@@ -8892,7 +8895,7 @@ function render(){
   const inView=ae&&$('#view').contains(ae);
   applyTheme();
   if(AU.carry){if(!S.ready||!S.seedOk){document.body.classList.add('locked');$('#view').innerHTML='';$('#auth').hidden=false;$('#auth').innerHTML='<div class="auth-card"><div class="empty">Đang chuyển chế độ…</div></div>';return}carryAdmin();}
-  if(S.ready&&S.seedOk&&!all('users').some(u=>u.role==='admin'&&u.active!==false))ensureDefaultUsers();
+  if(S.ready&&S.seedOk&&needDefaultUsers())ensureDefaultUsers();
   if(AU.user){AU.user=get('users',AU.user.id)||null;if(AU.user&&AU.user.active===false){AU.user=null;sessSet(null)}}
   if(!AU.user&&S.ready)AU.user=resolveSession();
   if(!AU.user||AU.user.mustChange){document.body.classList.add('locked');$('#view').innerHTML='';renderAuth();return}

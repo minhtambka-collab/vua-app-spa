@@ -7,9 +7,9 @@ App tùy biến theo ngành: nút **Spa / Nha khoa** ở thanh bên đổi bộ 
 ## Đăng nhập & phân quyền
 
 - Mở app sẽ vào **màn hình đăng nhập**. Lần đầu, app tự tạo tài khoản:
-  - **Quản lý:** `quanly` / `123456`
+  - **Quản lý:** `admin` (mật khẩu do chủ app giữ, không ghi ở đây)
   - **Mỗi nhân viên:** tên đăng nhập là tên gọi không dấu (VD `hoa`, `linh`, `mai`, `thao`; nha khoa: `tuan`, `vy`, `khoa`) / `123456`
-  - Mọi tài khoản **bắt buộc đổi mật khẩu** ở lần đăng nhập đầu.
+  - Tài khoản nhân viên **bắt buộc đổi mật khẩu** ở lần đăng nhập đầu.
 - **Quản lý**: dùng toàn bộ app, đổi Spa/Nha khoa, quản lý tài khoản ở *Cài đặt → Tài khoản & phân quyền* (thêm, sửa, khóa, đặt lại mật khẩu về `123456`, tạo tài khoản cho nhân viên chưa có).
 - **Nhân viên**: chỉ thấy các mục được tick (mặc định: Việc hôm nay, Thu ngân, Khách hàng, Lịch hẹn, Lịch đặt chỗ, Danh sách chờ, Ghi chú). Nhóm **Dịch vụ & hàng hóa** và nhóm **Hệ thống** luôn ẩn với nhân viên (vẫn bán sản phẩm được trong Thu ngân), cộng trang **Của tôi** (lịch hẹn, ca làm, công, lương tạm tính của riêng mình, đăng ký ca tuần sau, đổi mật khẩu). Quyền phụ: xóa dữ liệu, xuất file, giảm giá % ở thu ngân, xem lương của mình.
 - Mật khẩu lưu dạng băm SHA-256 có muối; sai 5 lần khóa 1 phút; phiên đăng nhập theo tab hoặc ghi nhớ 30 ngày. Thoát máy chấm công QR cần mật khẩu người đã mở.
